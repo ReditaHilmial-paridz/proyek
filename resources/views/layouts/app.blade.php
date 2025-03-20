@@ -146,7 +146,7 @@
                     <div id="collapseArsip" class="accordion-collapse collapse {{ request()->is('arsip*') ? 'show' : '' }}" data-bs-parent="#accordionSidebar">
                         <div class="accordion-body">
                             <a href="{{ route('arsip.index') }}" class="{{ request()->is('arsip/dokumen') ? 'active' : '' }}">Form surat</a>
-                            <a href="#" class="{{ request()->is('arsip/laporan') ? 'active' : '' }}">Data surat</a>
+                            <a href="{{ route('arsip.create') }}" class="{{ request()->is('arsip/laporan') ? 'active' : '' }}">Data surat</a>
                         </div>
                     </div>
                 </div>

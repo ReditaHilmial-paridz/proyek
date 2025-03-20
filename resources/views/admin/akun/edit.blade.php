@@ -1,12 +1,5 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Edit Akun</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-</head>
-<body>
+@extends('layouts.app')
+@section('content')
     <div class="container">
         <h1 class="my-4">Edit Akun</h1>
         <form action="{{ route('akun.update', $akun->id) }}" method="POST">
@@ -32,8 +25,8 @@
                     <option value="alumni" {{ $akun->role == 'alumni' ? 'selected' : '' }}>Alumni</option>
                 </select>
             </div>
-            <button type="submit" class="btn btn-primary">Simpan</button>
         </form>
+        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Simpan</button>
+        <a href="/akun" class="btn btn-secondary" style="margin-top: 10px;"> Kembali</a>
     </div>
-</body>
-</html>
+@endsection

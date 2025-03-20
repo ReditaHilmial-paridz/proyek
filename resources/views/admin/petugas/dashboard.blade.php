@@ -3,8 +3,7 @@
     <div class="container mt-4">
       <h4>Data Master Produk</h4>
       <div class="mb-3">
-        <button class="btn btn-primary me-2">Export Data Produk</button>
-        <button class="btn btn-success">Import Data Produk</button>
+        <button class="btn btn-primary me-2">Tambah</button>
       </div>
       
       <div class="mb-3 d-flex justify-content-between">
@@ -47,41 +46,7 @@
           </tr>
         </tbody>
       </table>
-      
-      <div class="d-flex justify-content-between">
-        <span>Showing 1 to of entries</span>
-        <nav>
-          <ul class="pagination">
-            <li class="page-item disabled"><a class="page-link">Previous</a></li>
-            <li class="page-item active"><a class="page-link">1</a></li>
-            <li class="page-item disabled"><a class="page-link">Next</a></li>
-          </ul>
-        </nav>
-      </div>
     </div>
-
-  
-  <script>
-  export default {
-    data() {
-      return {
-        entries: 10,
-        search: "",
-        products: [
-          { partNo: "P0001", partname: "Mouse Logitech", description: "Supplies", qty: "10", unit: "Unit", remark: "Consumable" },
-          { partNo: "P0002", partname: "Battery AAA Alkaline", description: "Consumable", qty: "25", unit: "Pack", remark: "Supplies" }
-        ]
-      };
-    },
-    computed: {
-      filteredData() {
-        return this.products.filter(p =>
-          Object.values(p).some(val => val.toString().toLowerCase().includes(this.search.toLowerCase()))
-        );
-      }
-    }
-  };
-  </script>
   
   <style>
   .container {
