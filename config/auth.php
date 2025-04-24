@@ -35,12 +35,16 @@ return [
     |
     */
 
-    'guards' => [
-        'web' => [
-            'driver' => 'session',
-            'provider' => 'users',
-        ],
+'guards' => [
+    'web' => [
+        'driver' => 'session',
+        'provider' => 'users', // Untuk admin (model User)
     ],
+    'akun' => [ // Nama guard yang lebih konsisten (tunggal)
+        'driver' => 'session',
+        'provider' => 'akuns', // Untuk user biasa (model Akun)
+    ],
+],
 
     /*
     |--------------------------------------------------------------------------
@@ -62,13 +66,12 @@ return [
     'providers' => [
         'users' => [
             'driver' => 'eloquent',
-            'model' => App\Models\User::class,
+            'model' => App\Models\User::class, // Untuk admin
         ],
-
-        // 'users' => [
-        //     'driver' => 'database',
-        //     'table' => 'users',
-        // ],
+        'akuns' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Akun::class, // Untuk user biasa
+        ],
     ],
 
     /*

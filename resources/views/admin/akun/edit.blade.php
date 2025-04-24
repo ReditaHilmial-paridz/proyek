@@ -15,7 +15,7 @@
             </div>
             <div class="form-group">
                 <label for="password">Password (Biarkan kosong jika tidak ingin mengubah)</label>
-                <input type="password" name="password" class="form-control">
+                <input type="password" name="password" class="form-control" placeholder="Kosongkan jika tidak ingin mengubah">
             </div>
             <div class="form-group">
                 <label for="role">Role</label>
@@ -25,8 +25,11 @@
                     <option value="alumni" {{ $akun->role == 'alumni' ? 'selected' : '' }}>Alumni</option>
                 </select>
             </div>
+            
+            <div class="form-group" style="margin-top: 20px;">
+                <button type="submit" class="btn btn-primary">Simpan</button>
+                <a href="{{ route('akun.index') }}" class="btn btn-secondary ml-2">Kembali</a>
+            </div>
         </form>
-        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Simpan</button>
-        <a href="/akun" class="btn btn-secondary" style="margin-top: 10px;"> Kembali</a>
     </div>
 @endsection

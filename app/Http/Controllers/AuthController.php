@@ -16,30 +16,20 @@ class AuthController extends Controller
     // Proses login admin
     public function adminLogin(Request $request)
     {
-        // Validasi input
         $credentials = $request->validate([
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        // Coba login
-        if (Auth::attempt($credentials)) {
-            // Periksa role user
+    
+        if (Auth::guard('web')->attempt($credentials)) {
             if (Auth::user()->role === 'admin') {
-                $request->session()->regenerate(); // Regenerasi session
-                return redirect()->route('admin.dashboard'); // Redirect ke dashboard admin
-            } else {
-                Auth::logout(); // Logout jika bukan admin
-                return back()->withErrors([
-                    'email' => 'Anda bukan admin.',
-                ]);
+                $request->session()->regenerate();
+                return redirect()->route('admin.dashboard'); // Gunakan nama route
             }
+            Auth::logout();
         }
-
-        // Jika login gagal
-        return back()->withErrors([
-            'email' => 'Email atau password salah.',
-        ]);
+    
+        return back()->withErrors(['email' => 'Kredensial admin tidak valid']);
     }
 
     // Tampilkan form login user
@@ -52,27 +42,25 @@ class AuthController extends Controller
     public function userLogin(Request $request)
     {
         $credentials = $request->validate([
-            'name' => 'required',
             'email' => 'required|email',
             'password' => 'required',
         ]);
-
-        if (Auth::attempt($credentials)) {
-            // Periksa role user
-            if (Auth::user()->role === 'user') {
-                $request->session()->regenerate();
-                return redirect()->intended('/user/dashboard'); // Redirect ke dashboard user
-            } else {
-                Auth::logout(); // Logout jika bukan user
-                return back()->withErrors([
-                    'email' => 'Anda bukan user.',
-                ]);
+    
+        // Gunakan guard 'akun' (bukan 'akuns')
+        if (Auth::guard('akun')->attempt($credentials)) {
+            $allowedRoles = ['siswa aktif', 'calon siswa', 'alumni'];
+            $user = Auth::guard('akun')->user();
+            
+            if (!in_array($user->role, $allowedRoles)) {
+                Auth::guard('akun')->logout();
+                return back()->withErrors(['email' => 'Role tidak valid untuk login user']);
             }
+    
+            $request->session()->regenerate();
+            return redirect()->intended('/user/dashboard');
         }
-
-        return back()->withErrors([
-            'email' => 'Nama, email, atau password salah.',
-        ]);
+    
+        return back()->withErrors(['email' => 'Email atau password salah']);
     }
 
     // Proses logout

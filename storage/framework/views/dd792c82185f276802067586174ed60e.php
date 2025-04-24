@@ -7,13 +7,11 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css">
     <style>
-        /* Struktur dasar */
+        /* Base Structure */
         body, html {
             height: 100%;
             margin: 0;
-            display: flex;
-            flex-direction: column;
-            background-color: #d9d9d9;
+            background-color: #f8f9fa;
         }
 
         /* Header */
@@ -24,29 +22,31 @@
             position: fixed;
             top: 0;
             left: 0;
-            z-index: 1000;
+            z-index: 1030;
         }
 
-        /* Wrapper flexbox */
+        /* Main Container */
         .main-container {
             display: flex;
-            flex-grow: 1;
-            margin-top: 50px; /* Supaya tidak tertutup header */
+            flex-direction: column;
+            min-height: 100vh;
+            padding-top: 50px;
         }
 
         /* Sidebar */
         .sidebar {
             width: 250px;
             background-color: white;
-            padding-top: 20px;
             color: #0d47a1;
-            flex-shrink: 0;
-            height: calc(100vh - 50px);
             position: fixed;
             top: 50px;
             left: 0;
+            bottom: 0;
             overflow-y: auto;
+            transition: transform 0.3s ease;
+            z-index: 1020;
         }
+
         .sidebar a {
             padding: 12px 15px;
             text-decoration: none;
@@ -55,26 +55,29 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            transition: all 0.3s;
         }
+
         .sidebar a:hover, .sidebar .active {
             background-color: #1976d2;
             border-left: 5px solid white;
             color: white;
         }
+
         .sidebar i {
             font-size: 18px;
+            min-width: 24px;
         }
 
-        /* Konten utama */
+        /* Content Area */
         .content {
-            flex-grow: 1;
+            flex: 1;
             padding: 20px;
-            margin-left: 250px; /* Menyesuaikan dengan sidebar */
-            overflow-y: auto;
-            min-height: calc(100vh - 50px);
+            margin-left: 250px;
+            transition: margin 0.3s ease;
         }
 
-        /* Styling untuk Accordion */
+        /* Accordion Styling */
         .accordion-button {
             background-color: white !important;
             color: #0d47a1 !important;
@@ -87,30 +90,110 @@
             width: 100%;
             text-align: left;
         }
+
         .accordion-button:hover, .accordion-button:focus {
             background-color: #1976d2 !important;
             color: white !important;
         }
+
         .accordion-button:not(.collapsed) {
             background-color: #1976d2 !important;
             color: white !important;
         }
+
         .accordion-body {
             padding: 0;
         }
+
         .accordion-body a {
             padding: 12px 40px;
             display: block;
             color: #0d47a1;
             text-decoration: none;
+            transition: all 0.3s;
         }
+
         .accordion-body a:hover, .accordion-body .active {
             background-color: #1976d2;
             color: white;
         }
+
+        /* Mobile Menu Button */
+        .mobile-menu-btn {
+            display: none;
+            position: fixed;
+            top: 10px;
+            left: 10px;
+            z-index: 1040;
+            background: rgba(255, 255, 255, 0.8);
+            border: none;
+            border-radius: 4px;
+            padding: 5px 10px;
+            color: #0d47a1;
+        }
+
+        /* Responsive Adjustments */
+        @media (max-width: 992px) {
+            .sidebar {
+                transform: translateX(-100%);
+            }
+            
+            .sidebar.show {
+                transform: translateX(0);
+            }
+            
+            .content {
+                margin-left: 0;
+            }
+            
+            .mobile-menu-btn {
+                display: block;
+            }
+        }
+
+        /* Card Styling */
+        .card {
+            border-radius: 10px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            margin-bottom: 20px;
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        /* Table Responsiveness */
+        .table-responsive {
+            overflow-x: auto;
+        }
+            /* Footer Styles */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 250px;
+            right: 0;
+            z-index: 1000;
+            transition: left 0.3s ease;
+        }
+
+        @media (max-width: 992px) {
+            .footer {
+                left: 0;
+            }
+        }
+
+        .main-container {
+            padding-bottom: 60px; /* Match footer height */
+        }
     </style>
 </head>
 <body>
+
+    <!-- Mobile Menu Button -->
+    <button class="mobile-menu-btn" id="mobileMenuBtn">
+        <i class="bi bi-list"></i> Menu
+    </button>
 
     <!-- Header -->
     <div class="top-header"></div>
@@ -118,7 +201,7 @@
     <!-- Wrapper utama -->
     <div class="main-container">
         <!-- Sidebar -->
-        <div class="sidebar d-flex flex-column">
+        <div class="sidebar" id="sidebar">
             <a href="<?php echo e(route('admin.dashboard')); ?>" class="<?php echo e(request()->routeIs('admin.dashboard') ? 'active' : ''); ?>">
                 <i class="bi bi-house-door"></i> Dashboard
             </a>
@@ -145,13 +228,12 @@
                     </h2>
                     <div id="collapseArsip" class="accordion-collapse collapse <?php echo e(request()->is('arsip*') ? 'show' : ''); ?>" data-bs-parent="#accordionSidebar">
                         <div class="accordion-body">
-                            <a href="<?php echo e(route('arsip.index')); ?>" class="<?php echo e(request()->is('arsip/dokumen') ? 'active' : ''); ?>">Form surat</a>
-                            <a href="#" class="<?php echo e(request()->is('arsip/laporan') ? 'active' : ''); ?>">Data surat</a>
+                            <a href="<?php echo e(route('arsip.create')); ?>" class="<?php echo e(request()->is('arsip/dokumen') ? 'active' : ''); ?>">Form surat</a>
+                            <a href="<?php echo e(route('arsip.index')); ?>" class="<?php echo e(request()->is('arsip/laporan') ? 'active' : ''); ?>">Data surat</a>
                         </div>
                     </div>
                 </div>
             </div>
-
         </div>
 
         <!-- Konten -->
@@ -159,8 +241,50 @@
             <?php echo $__env->yieldContent('content'); ?>
         </div>
     </div>
-
+    <footer class="footer mt-auto py-3 bg-light border-top">
+    <div class="container-fluid">
+        <div class="row align-items-center">
+            <div class="col-md-6 text-center text-md-start">
+                <span class="text-muted">&copy; 2025 Sarana Prasana. All rights reserved.</span>
+            </div>
+            <div class="col-md-6 text-center text-md-end">
+                <span class="text-muted">Version 1.0.0</span>
+                <a href="#" class="text-decoration-none ms-2 text-primary">Help</a>
+                <a href="#" class="text-decoration-none ms-2 text-primary">Privacy Policy</a>
+            </div>
+        </div>
+    </div>
+</footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Mobile menu toggle
+        document.getElementById('mobileMenuBtn').addEventListener('click', function() {
+            document.getElementById('sidebar').classList.toggle('show');
+        });
+
+        // Close sidebar when clicking outside on mobile
+        document.addEventListener('click', function(event) {
+            const sidebar = document.getElementById('sidebar');
+            const mobileBtn = document.getElementById('mobileMenuBtn');
+            
+            if (window.innerWidth <= 992 && 
+                !sidebar.contains(event.target) && 
+                event.target !== mobileBtn && 
+                !mobileBtn.contains(event.target)) {
+                sidebar.classList.remove('show');
+            }
+        });
+
+        // Auto-close sidebar when navigating on mobile
+        const sidebarLinks = document.querySelectorAll('.sidebar a');
+        sidebarLinks.forEach(link => {
+            link.addEventListener('click', function() {
+                if (window.innerWidth <= 992) {
+                    document.getElementById('sidebar').classList.remove('show');
+                }
+            });
+        });
+    </script>
 </body>
 </html>
 <?php /**PATH C:\laragon\www\try\resources\views/layouts/app.blade.php ENDPATH**/ ?>

@@ -1,64 +1,139 @@
 <?php
+
 namespace App\Http\Controllers;
+
 use App\Models\Petugas;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PetugasController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * Tampilkan daftar petugas.
      */
     public function index()
     {
-        $petugass = Petugas::all();
-        return view('admin.petugas.dashboard', compact('petugass'));
+        $petugas = Petugas::all();
+        return view('admin.petugas.dashboard', compact('petugas'));
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Simpan data petugas ke dalam database.
      */
     public function store(Request $request)
     {
-        //
+        try {
+            // Validasi data
+            $validatedData = $request->validate([
+                'nama' => 'required|string|max:255',
+                'jabatan' => 'required|string|max:50',
+                'kontak' => 'required|string|max:20',
+                'email' => 'nullable|email|max:255',
+            ]);
+
+            // Simpan data
+            $petugas = Petugas::create($validatedData);
+
+            // Response sukses
+            return response()->json([
+                'success' => true,
+                'petugas' => $petugas
+            ]);
+        } catch (\Exception $e) {
+            // Tangani error
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
     }
 
     /**
-     * Display the specified resource.
+     * Reset dan simpan ulang data petugas.
      */
-    public function show(string $id)
+    public function resetStore(Request $request)
     {
-        //
+        // Validasi data
+        $request->validate([
+            'petugas' => 'required|array',
+            'petugas.*.nama' => 'required|string|max:255',
+            'petugas.*.jabatan' => 'required|string|max:50',
+            'petugas.*.kontak' => 'required|string|max:20',
+            'petugas.*.email' => 'nullable|email|max:255',
+        ]);
+
+        // Hapus semua data petugas
+        Petugas::truncate();
+
+        // Simpan data baru
+        foreach ($request->petugas as $data) {
+            Petugas::create([
+                'nama' => $data['nama'],
+                'jabatan' => $data['jabatan'],
+                'kontak' => $data['kontak'],
+                'email' => $data['email'] ?? null,
+            ]);
+        }
+
+        return response()->json(['success' => true]);
     }
 
     /**
-     * Show the form for editing the specified resource.
+     * Update data petugas berdasarkan ID.
      */
-    public function edit(string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'nama' => 'required|string|max:255',
+            'jabatan' => 'required|string|max:50',
+            'kontak' => 'required|string|max:20',
+            'email' => 'nullable|email|max:255',
+        ]);
+
+        $petugas = Petugas::findOrFail($id);
+        $petugas->update([
+            'nama' => $request->nama,
+            'jabatan' => $request->jabatan,
+            'kontak' => $request->kontak,
+            'email' => $request->email,
+        ]);
+
+        return response()->json(['success' => true, 'petugas' => $petugas]);
     }
 
     /**
-     * Update the specified resource in storage.
+     * Hapus data petugas berdasarkan ID.
      */
-    public function update(Request $request, string $id)
+    public function destroy($id)
     {
-        //
+        $petugas = Petugas::findOrFail($id);
+        $petugas->delete();
+
+        return response()->json(['success' => true]);
     }
 
     /**
-     * Remove the specified resource from storage.
+     * Download template Excel untuk import petugas
      */
-    public function destroy(string $id)
+    public function template()
     {
-        //
+        // Jika menggunakan Laravel Excel
+        // return Excel::download(new PetugasTemplateExport(), 'template_petugas.xlsx');
+        
+        // Alternatif tanpa package Excel
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="template_petugas.csv"',
+        ];
+
+        $columns = ['Nama', 'Jabatan', 'Kontak', 'Email'];
+
+        $callback = function() use ($columns) {
+            $file = fopen('php://output', 'w');
+            fputcsv($file, $columns);
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

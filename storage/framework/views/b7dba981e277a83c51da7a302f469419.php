@@ -5,22 +5,80 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login Admin</title>
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
+    <style>
+        .password-toggle {
+            position: absolute;
+            right: 10px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            z-index: 5;
+        }
+        .password-input-group {
+            position: relative;
+        }
+    </style>
 </head>
 <body>
-    <div class="container">
-        <h1 class="my-4">Login Admin</h1>
-        <form action="<?php echo e(route('admin.login')); ?>" method="POST">
-            <?php echo csrf_field(); ?>
-            <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" name="email" class="form-control" required>
+    <div class="container mt-5">
+        <div class="row justify-content-center">
+            <div class="col-md-6">
+                <div class="card">
+                    <div class="card-header">
+                        <h2 class="text-center">Login Admin</h2>
+                    </div>
+                    <div class="card-body">
+                        <form action="<?php echo e(route('admin.login')); ?>" method="POST">
+                            <?php echo csrf_field(); ?>
+                            <div class="form-group">
+                                <label for="admin_email">Email</label>
+                                <input type="email" 
+                                       class="form-control" 
+                                       id="admin_email" 
+                                       name="email" 
+                                       required
+                                       autocomplete="email"
+                                       aria-describedby="emailHelp">
+                                <small id="emailHelp" class="form-text text-muted">Masukkan email admin</small>
+                            </div>
+                            <div class="form-group">
+                                <label for="admin_password">Password</label>
+                                <div class="password-input-group">
+                                    <input type="password" 
+                                           class="form-control" 
+                                           id="admin_password" 
+                                           name="password" 
+                                           required
+                                           autocomplete="current-password"
+                                           aria-describedby="passwordHelp">
+                                    <i class="fas fa-eye password-toggle" id="togglePassword"></i>
+                                </div>
+                                <small id="passwordHelp" class="form-text text-muted">Masukkan password admin</small>
+                            </div>
+                            <button type="submit" class="btn btn-primary btn-block">Login</button>
+                        </form>
+                    </div>
+                </div>
             </div>
-            <div class="form-group">
-                <label for="password">Password</label>
-                <input type="password" name="password" class="form-control" required>
-            </div>
-            <button type="submit" class="btn btn-primary">Login</button>
-        </form>
+        </div>
     </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const togglePassword = document.querySelector('#togglePassword');
+            const password = document.querySelector('#admin_password');
+            
+            togglePassword.addEventListener('click', function() {
+                // Toggle the type attribute
+                const type = password.getAttribute('type') === 'password' ? 'text' : 'password';
+                password.setAttribute('type', type);
+                
+                // Toggle the eye icon
+                this.classList.toggle('fa-eye');
+                this.classList.toggle('fa-eye-slash');
+            });
+        });
+    </script>
 </body>
 </html><?php /**PATH C:\laragon\www\try\resources\views/auth/admin/login.blade.php ENDPATH**/ ?>

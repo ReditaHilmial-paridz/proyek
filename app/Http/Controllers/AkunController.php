@@ -6,9 +6,23 @@ use Illuminate\Http\Request;
 
 class AkunController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $akuns = Akun::all();
+        // Ambil kata kunci pencarian
+        $search = $request->input('search');
+
+        // Query data akun
+        $akuns = Akun::when($search, function ($query, $search) {
+            // Jika ada input pencarian, filter data
+            return $query->where('name', 'like', "%$search%")
+                         ->orWhere('email', 'like', "%$search%")
+                         ->orWhere('role', 'like', "%$search%");
+        }, function ($query) {
+            // Jika tidak ada input pencarian, tampilkan semua data
+            return $query;
+        })->get();
+
+        // Tampilkan view dengan data akun
         return view('admin.akun.dashboard', compact('akuns'));
     }
 
@@ -33,12 +47,12 @@ class AkunController extends Controller
             'role' => $request->role,
         ]);
 
-        return redirect()->route('admin.akun.dashboard')->with('success', 'Akun berhasil ditambahkan');
+        return redirect()->route('akun.index')->with('success', 'Akun berhasil ditambahkan');
     }
 
     public function edit(Akun $akun)
     {
-        return view('akun.edit', compact('akun'));
+        return view('admin.akun.edit', compact('akun'));
     }
 
     public function update(Request $request, Akun $akun)

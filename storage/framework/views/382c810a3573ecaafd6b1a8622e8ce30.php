@@ -1,15 +1,16 @@
-@extends('layouts.app')
 
-@section('content')
+
+<?php $__env->startSection('content'); ?>
   <div class="container mt-5">
     <h3 class="text-center">FORM PENDATAAN SURAT</h3>
-    @if(session('success'))
+    <?php if(session('success')): ?>
       <div class="alert alert-success">
-        {{ session('success') }}
+        <?php echo e(session('success')); ?>
+
       </div>
-    @endif
-    <form method="POST" action="{{ route('surat.store') }}" enctype="multipart/form-data">
-      @csrf
+    <?php endif; ?>
+    <form method="POST" action="<?php echo e(route('surat.store')); ?>" enctype="multipart/form-data">
+      <?php echo csrf_field(); ?>
       <div class="mb-3">
         <label class="form-label">Nama Dokumen :</label>
         <input type="text" name="namaDokumen" class="form-control" required>
@@ -52,10 +53,11 @@
       </div>
     </form>
   </div>
-@endsection
+<?php $__env->stopSection(); ?>
 
 <style>
 body {
   background-color: #f8f9fa;
 }
 </style>
+<?php echo $__env->make('layouts.app', \Illuminate\Support\Arr::except(get_defined_vars(), ['__data', '__path']))->render(); ?><?php /**PATH C:\laragon\www\try\resources\views/admin/arsip/create.blade.php ENDPATH**/ ?>

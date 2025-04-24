@@ -18,6 +18,7 @@ return new class extends Migration
             $table->string('kondisi');
             $table->string('lokasi');
             $table->text('deskripsi');
+            $table->string('gambar'); // Tambahkan ini
             $table->timestamps();
         });
     }
